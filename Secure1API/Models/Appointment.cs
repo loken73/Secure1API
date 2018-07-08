@@ -20,7 +20,7 @@ namespace Secure1API.Models
 
     public class AppointmentViewModel
     {
-        public string Date { get; set; }
+        public string ApptDate { get; set; }
 
         public string Time { get; set; }
 

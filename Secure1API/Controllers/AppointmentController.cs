@@ -48,22 +48,30 @@ namespace Secure1API.Controllers
 
             ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
 
-            var appointments = _appDb.Appointments.ToList();
-
-            foreach (Appointment app in appointments)
+            if (_appDb.Appointments == null)
             {
-                var appDetails = new AppointmentDetails
-                {
-                    UserName = app.User.FirstName + " " + app.User.LastName,
-                    Date = DTHelp.ParseDate(app.DateAndTime),
-                    Time = DTHelp.ParseTime(app.DateAndTime),
-                    Notes = app.Notes
-                };
-
-                details.Add(appDetails);
+                return null;
             }
+            else
+            {
+                var appointments = _appDb.Appointments.ToList();
 
-            return details;
+                foreach (Appointment app in appointments)
+                {
+                    var appDetails = new AppointmentDetails
+                    {
+                        UserName = app.User.FirstName + " " + app.User.LastName,
+                        Date = DTHelp.ParseDate(app.DateAndTime),
+                        Time = DTHelp.ParseTime(app.DateAndTime),
+                        Notes = app.Notes
+                    };
+
+                    details.Add(appDetails);
+                }
+
+                return details;
+            }
+          
         }
 
         // GET api/values/5
@@ -74,34 +82,43 @@ namespace Secure1API.Controllers
             var appointments = _appDb.Appointments
                     .Where(app => app.User.Id == user.Id).ToList();
 
-            var apptsPerPerson = new AppointmentsPerPersonModel
+            if (_appDb.Appointments.Where(app => app.User.Id == user.Id) == null)
             {
-                UserName = user.FirstName + " " + user.LastName
-            };
-
-            foreach (Appointment app in appointments)
+                return null;
+            }
+            else
             {
-                var appView = new AppointmentViewModel
+                var apptsPerPerson = new AppointmentsPerPersonModel
                 {
-                    Date = DTHelp.ParseDate(app.DateAndTime),
-                    Time = DTHelp.ParseTime(app.DateAndTime),
-                    Notes = app.Notes
+                    UserName = user.FirstName + " " + user.LastName
                 };
 
-                apptsPerPerson.Appointments.Add(appView);
-            }
+                foreach (Appointment app in appointments)
+                {
+                    var appView = new AppointmentViewModel
+                    {
+                        ApptDate = DTHelp.ParseDate(app.DateAndTime),
+                        Time = DTHelp.ParseTime(app.DateAndTime),
+                        Notes = app.Notes
+                    };
 
-            return apptsPerPerson;
+                    apptsPerPerson.Appointments.Add(appView);
+                }
+
+                return apptsPerPerson;
+            }
         }
 
         // POST api/values
         public void Post(AppointmentViewModel apptVM)
         {
-            ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
+            ApplicationUser Ouser = UserManager.FindById(User.Identity.GetUserId());
+
+            var user = _appDb.Users.Where(u => u.Id == Ouser.Id).FirstOrDefault();
 
             var newAppt = new Appointment
             {
-                DateAndTime = DateTime.Parse(apptVM.Date + " " + apptVM.Time),
+                DateAndTime = DateTime.Parse(apptVM.ApptDate + " " + apptVM.Time),
                 Notes = apptVM.Notes,
                 User = user
             };
