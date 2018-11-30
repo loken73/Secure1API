@@ -13,6 +13,8 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
+using Newtonsoft.Json.Linq;
+using Secure1API.HelperMethods;
 using Secure1API.Models;
 using Secure1API.Providers;
 using Secure1API.Results;
@@ -336,7 +338,7 @@ namespace Secure1API.Controllers
                 Email = model.Email,
                 FirstName = model.FirstName,
                 LastName = model.LastName
-            };
+            }; 
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
 
@@ -345,7 +347,10 @@ namespace Secure1API.Controllers
                 return GetErrorResult(result);
             }
 
-            return Ok();
+            //var json = JToken.FromObject(result);
+            var req = Request.Properties;
+
+            return Ok("200");
         }
 
         // POST api/Account/RegisterExternal

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
+using Secure1API.HelperMethods;
 using Secure1API.Models;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace Secure1API.Controllers
@@ -42,7 +44,7 @@ namespace Secure1API.Controllers
 
         // GET api/Appointment
         [Route("All")]
-        public List<AppointmentDetails> GetAll()
+        public IHttpActionResult GetAll()
         {
             var details = new List<AppointmentDetails>();
 
@@ -69,13 +71,13 @@ namespace Secure1API.Controllers
                     details.Add(appDetails);
                 }
 
-                return details;
+                return Ok(details);
             }
           
         }
 
         // GET api/values/5
-        public AppointmentsPerPersonModel Get()
+        public IHttpActionResult Get()
         {
             ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
 
@@ -105,12 +107,12 @@ namespace Secure1API.Controllers
                     apptsPerPerson.Appointments.Add(appView);
                 }
 
-                return apptsPerPerson;
+                return Ok(apptsPerPerson);
             }
         }
 
         // POST api/values
-        public void Post(AppointmentViewModel apptVM)
+        public IHttpActionResult Post(AppointmentViewModel apptVM)
         {
             ApplicationUser Ouser = UserManager.FindById(User.Identity.GetUserId());
 
@@ -125,6 +127,10 @@ namespace Secure1API.Controllers
 
             _appDb.Appointments.Add(newAppt);
             _appDb.SaveChanges();
+
+            //var jsonAppt = Newtonsoft.Json.JsonConvert.SerializeObject(newAppt);
+
+            return Ok("200");
         }
 
         /*/ PUT api/values/5
